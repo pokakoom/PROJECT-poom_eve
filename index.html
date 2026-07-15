@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PROJECT: US</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-dusk-top: #3b2a52;
+    --bg-dusk-mid: #7a4560;
+    --bg-dusk-bottom: #d98a5a;
+    --panel: #fff1de;
+    --panel-soft: #ffe8c9;
+    --outline: #3a2320;
+    --accent-gold: #f2a541;
+    --accent-pink: #e8748a;
+    --accent-green: #8fbf6f;
+    --accent-blue: #6ea8d9;
+    --text-dark: #4a2c2a;
+    --text-soft: #7a5548;
+    --text-cream: #fff1de;
+    --shadow-hard: #2a1815;
+  }
+
+  * { box-sizing: border-box; image-rendering: pixelated; }
+  body, p, span, div { image-rendering: auto; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Pixelify Sans', sans-serif;
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  body {
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.035) 0px, rgba(0,0,0,0.035) 1px, transparent 1px, transparent 3px),
+      linear-gradient(180deg, var(--bg-dusk-top) 0%, var(--bg-dusk-mid) 55%, var(--bg-dusk-bottom) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* pixel stars / sparkles instead of soft glow */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .spark {
+    position: absolute;
+    background: var(--accent-gold);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+    animation: twinkle steps(2, jump-none) infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.9; }
+  }
+
+  /* phone-frame console wrapper */
+  .console-wrap {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 18px 10px 40px;
+  }
+
+  .console-frame {
+    width: 100%;
+    max-width: 420px;
+    background: var(--panel-soft);
+    border: 4px solid var(--outline);
+    box-shadow: 6px 6px 0 var(--shadow-hard);
+    clip-path: polygon(
+      10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px),
+      calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px
+    );
+    padding: 16px 12px 20px;
+  }
+
+  .page {
+    display: none;
+    animation: page-in 0.45s steps(6, end);
+  }
+  .page.active { display: block; }
+
+  @keyframes page-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h1, h2, h3, .display {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-weight: 700;
+  }
+
+  /* ---------- shared pixel components ---------- */
+  .pixel-panel {
+    background: var(--panel);
+    border: 3px solid var(--outline);
+    box-shadow: 3px 3px 0 var(--outline);
+    clip-path: polygon(
+      6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px),
+      calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px
+    );
+  }
+
+  .pixel-btn {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    background: var(--accent-gold);
+    border: 3px solid var(--outline);
+    box-shadow: 3px 3px 0 var(--outline);
+    clip-path: polygon(
+      6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px),
+      calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px
+    );
+    padding: 12px 20px;
+    cursor: pointer;
+    width: 100%;
+    display: block;
+    text-align: center;
+    transition: transform 0.08s ease;
+  }
+  .pixel-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--outline);
+  }
+  .pixel-btn:focus-visible {
+    outline: 3px dashed var(--text-cream);
+    outline-offset: 3px;
+  }
+  .pixel-btn.ghost {
+    background: transparent;
+    color: var(--text-cream);
+    border-color: var(--text-cream);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.35);
+  }
+
+  /* pixel heart icon (svg) */
+  .pixel-heart { image-rendering: pixelated; display: block; margin: 0 auto 6px; }
+
+  /* ---------- PAGE 1 ---------- */
+  .eyebrow {
+    text-align: center;
+    color: var(--accent-gold);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .game-title {
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(1.05rem, 6vw, 1.4rem);
+    color: var(--text-cream);
+    line-height: 1.5;
+    text-shadow: 3px 3px 0 var(--shadow-hard);
+    margin: 6px 0 14px;
+  }
+
+  .tagline {
+    text-align: center;
+    color: var(--accent-gold);
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-height: 1.4em;
+    margin-bottom: 18px;
+    opacity: 0;
+    animation: tagline-in 1s steps(10, end) 0.3s forwards;
+  }
+  @keyframes tagline-in { to { opacity: 1; } }
+
+  .player-select {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .player-card {
+    padding: 14px 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: card-rise 0.5s steps(5, end) backwards;
+  }
+  .player-card:nth-child(1) { animation-delay: 0.1s; }
+  .player-card:nth-child(2) { animation-delay: 0.2s; }
+  @keyframes card-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .player-avatar {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    background: var(--accent-pink);
+    border: 3px solid var(--outline);
+    box-shadow: 2px 2px 0 var(--outline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    clip-path: polygon(
+      6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px),
+      calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px
+    );
+  }
+  .player-card:nth-child(2) .player-avatar { background: var(--accent-blue); }
+
+  .player-info { flex: 1; }
+  .player-name { font-size: 0.95rem; margin: 0 0 2px; color: var(--text-dark); }
+  .player-tag {
+    font-size: 0.6rem;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .stat-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 10px 6px;
+    margin-bottom: 16px;
+    background: var(--outline);
+  }
+  .stat {
+    flex: 1;
+    text-align: center;
+    color: var(--text-cream);
+    padding: 4px 2px;
+  }
+  .stat-value {
+    font-size: 0.72rem;
+    display: block;
+    color: var(--accent-gold);
+    margin-bottom: 2px;
+  }
+  .stat-label {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+  }
+
+  /* ---------- PAGE 2 ---------- */
+  .section-heading {
+    text-align: center;
+    color: var(--text-cream);
+    font-size: 1rem;
+    margin-bottom: 2px;
+    text-shadow: 2px 2px 0 var(--shadow-hard);
+  }
+  .section-sub {
+    text-align: center;
+    color: var(--accent-gold);
+    font-size: 0.68rem;
+    margin-bottom: 14px;
+  }
+
+  .badge-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .achv-card {
+    perspective: 700px;
+    height: 118px;
+    cursor: pointer;
+  }
+  .achv-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s steps(8, end);
+    transform-style: preserve-3d;
+  }
+  .achv-card.flipped .achv-inner { transform: rotateY(180deg); }
+
+  .achv-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .achv-front { background: var(--panel); }
+  .achv-front .emoji { font-size: 1.6rem; margin-bottom: 6px; }
+  .achv-front .achv-title { font-size: 0.62rem; color: var(--text-dark); line-height: 1.2; }
+
+  .achv-back {
+    background: var(--panel-soft);
+    transform: rotateY(180deg);
+  }
+  .achv-back .achv-date {
+    font-size: 0.55rem;
+    color: var(--accent-pink);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .achv-back .achv-story {
+    font-size: 0.6rem;
+    line-height: 1.3;
+    color: var(--text-soft);
+    overflow-y: auto;
+    max-height: 68px;
+  }
+
+  @keyframes unlock-glow {
+    0%, 100% { box-shadow: 3px 3px 0 var(--outline); }
+    50% { box-shadow: 3px 3px 0 var(--outline), 0 0 0 3px var(--accent-gold); }
+  }
+  .achv-card.flipped .achv-back { animation: unlock-glow 0.6s steps(4, end); }
+
+  .secret-label {
+    text-align: center;
+    color: var(--text-cream);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 4px 0 10px;
+    opacity: 0.8;
+  }
+
+  .secret-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .badge.locked {
+    background: rgba(58, 35, 32, 0.35);
+    border: 2px dashed var(--text-cream);
+    padding: 12px 6px;
+    text-align: center;
+    color: var(--text-cream);
+    cursor: pointer;
+  }
+  .badge.locked .lock-emoji { font-size: 1.2rem; display: block; margin-bottom: 4px; opacity: 0.9; }
+  .badge.locked .lock-name { font-size: 0.55rem; opacity: 0.85; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(14px);
+    background: var(--outline);
+    color: var(--accent-gold);
+    font-size: 0.7rem;
+    padding: 10px 16px;
+    border: 2px solid var(--accent-gold);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 10;
+    text-align: center;
+    max-width: 85vw;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .nav-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .nav-row .pixel-btn { flex: 1; }
+
+  /* ---------- PAGE 3 ---------- */
+  .mission-box {
+    text-align: center;
+    padding: 30px 16px;
+  }
+  .mission-status {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-pink);
+    margin-bottom: 8px;
+  }
+  .mission-line {
+    font-size: clamp(0.95rem, 4.5vw, 1.15rem);
+    color: var(--text-dark);
+    margin-bottom: 18px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .reveal-text {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: var(--accent-pink);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.4s ease;
+    font-weight: 700;
+  }
+  .reveal-text.show {
+    opacity: 1;
+    max-height: 200px;
+    animation: heartbeat 1s steps(6, end) 0.2s;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scale(1.1); }
+    60% { transform: scale(1); }
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    color: var(--text-cream);
+    opacity: 0.75;
+    font-size: 0.62rem;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  @media (min-width: 480px) {
+    .console-wrap { padding-top: 32px; }
+    .console-frame { padding: 22px 20px 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient" id="ambient"></div>
+
+<div class="console-wrap">
+<div class="console-frame">
+
+  <!-- PAGE 1: TITLE / PLAYER SELECT -->
+  <section class="page active" id="page1">
+    <svg class="pixel-heart" width="28" height="24" viewBox="0 0 8 7" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 0h1v1H1zM5 0h1v1H5zM0 1h1v1H0zM2 1h2v1H2zM6 1h1v1H6zM0 2h7v1H0zM0 3h7v1H0zM1 4h5v1H1zM2 5h3v1H2zM3 6h1v1H3z" fill="#e8748a"/>
+    </svg>
+    <div class="eyebrow">Project: US</div>
+    <h1 class="game-title">PROJECT: US</h1>
+    <p class="tagline" id="taglineText">Every memory unlocked.<br>More adventures loading...</p>
+
+    <div class="player-select">
+      <div class="pixel-panel player-card">
+        <div class="player-avatar">❤️</div>
+        <div class="player-info">
+          <p class="player-name">Player 1</p>
+          <p class="player-tag">You</p>
+        </div>
+      </div>
+      <div class="pixel-panel player-card">
+        <div class="player-avatar">😊</div>
+        <div class="player-info">
+          <p class="player-name">Player 2</p>
+          <p class="player-tag">Me</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-bar">
+      <div class="stat">
+        <span class="stat-value">In Love</span>
+        <span class="stat-label">Status</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">Lv. 1 Yr</span>
+        <span class="stat-label">Level</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">11/∞</span>
+        <span class="stat-label">Achv.</span>
+      </div>
+    </div>
+
+    <button class="pixel-btn" onclick="goToPage(2)">Continue →</button>
+  </section>
+
+  <!-- PAGE 2: ACHIEVEMENTS -->
+  <section class="page" id="page2">
+    <h2 class="section-heading">🏆 Achievements</h2>
+    <p class="section-sub">Tap a badge to relive it</p>
+
+    <div class="badge-grid" id="achvGrid"></div>
+
+    <p class="secret-label">❓ Secret Achievements</p>
+    <div class="secret-row" id="secretRow"></div>
+
+    <div class="nav-row">
+      <button class="pixel-btn ghost" onclick="goToPage(1)">← Back</button>
+      <button class="pixel-btn" onclick="goToPage(3)">Continue →</button>
+    </div>
+  </section>
+
+  <!-- PAGE 3: ENDING -->
+  <section class="page" id="page3">
+    <div class="pixel-panel mission-box">
+      <p class="mission-status">Mission Status</p>
+      <p class="mission-line">Completed? No.<br>This is only the beginning.</p>
+      <button class="pixel-btn" id="continueStoryBtn" onclick="revealEnding()">▶ Continue Our Story</button>
+      <p class="reveal-text" id="revealText">Coming Soon...<br>Tomorrow ❤️</p>
+    </div>
+    <span class="back-link" onclick="goToPage(2)">← Back to Achievements</span>
+  </section>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ---------------------------------------------------------------
+  // EDIT ME: unlocked achievements — change dates + story text freely
+  // ---------------------------------------------------------------
+  const achievements = [
+    { emoji: '💬', title: 'First Message', date: 'May, 2025', story: 'are you thai?.' },
+    { emoji: '📸', title: 'First Selfie', date: 'June, 2026', story: 'ah it in the car hahaha.' },
+    { emoji: '☕', title: 'First Date', date: 'June, 2026', story: 'you look smallerrrr and it was good first date are the capy still there?.' },
+    { emoji: '🚗', title: 'First Road Trip', date: 'June, 2026', story: 'trust me, Im professional.' },
+    { emoji: '🌊', title: 'First Beach Together', date: 'June, 2026', story: 'well we didnt have time to go down there but yea, seeing the sun set is great too.' },
+    { emoji: '😴', title: 'Fell Asleep on Call', date: 'March, 2026', story: 'I have some picture when u sleep hehehe. love u' },
+    { emoji: '😂', title: 'Laughed Until Crying', date: '2026', story: 'we laughed a lot but laughed till cry? well it happen and i love it.' }
+  ];
+
+  // ---------------------------------------------------------------
+  // EDIT ME: locked / secret achievements — change labels if you like
+  // ---------------------------------------------------------------
+  const secrets = [
+    { name: 'Japan Trip' },
+    { name: 'Living Together' },
+    { name: 'Our First Pet' },
+    { name: '100 Dates' }
+  ];
+
+  const achvGrid = document.getElementById('achvGrid');
+  achievements.forEach((a) => {
+    const card = document.createElement('div');
+    card.className = 'achv-card';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', a.title);
+    card.innerHTML = `
+      <div class="achv-inner">
+        <div class="achv-face achv-front pixel-panel">
+          <span class="emoji">${a.emoji}</span>
+          <span class="achv-title">${a.title}</span>
+        </div>
+        <div class="achv-face achv-back pixel-panel">
+          <span class="achv-date">${a.date}</span>
+          <span class="achv-story">${a.story}</span>
+        </div>
+      </div>
+    `;
+    const flip = () => card.classList.toggle('flipped');
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+    achvGrid.appendChild(card);
+  });
+
+  const secretRow = document.getElementById('secretRow');
+  secrets.forEach((s) => {
+    const badge = document.createElement('div');
+    badge.className = 'badge locked';
+    badge.tabIndex = 0;
+    badge.setAttribute('role', 'button');
+    badge.setAttribute('aria-label', 'Locked achievement');
+    badge.innerHTML = `<span class="lock-emoji">❓</span><span class="lock-name">Locked</span>`;
+    const reveal = () => showToast(`${s.name} — Coming Soon...`);
+    badge.addEventListener('click', reveal);
+    badge.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(); } });
+    secretRow.appendChild(badge);
+  });
+
+  let toastTimer;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function goToPage(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function revealEnding() {
+    document.getElementById('revealText').classList.add('show');
+    document.getElementById('continueStoryBtn').disabled = true;
+    document.getElementById('continueStoryBtn').style.opacity = '0.6';
+    document.getElementById('continueStoryBtn').style.cursor = 'default';
+  }
+
+  // ambient pixel sparks
+  const ambient = document.getElementById('ambient');
+  const sparkCount = window.innerWidth < 480 ? 8 : 14;
+  for (let i = 0; i < sparkCount; i++) {
+    const spark = document.createElement('div');
+    spark.className = 'spark';
+    const size = (2 + Math.floor(Math.random() * 2)) + 'px';
+    spark.style.width = size;
+    spark.style.height = size;
+    spark.style.left = Math.random() * 100 + 'vw';
+    spark.style.top = Math.random() * 100 + 'vh';
+    spark.style.animationDuration = (1.5 + Math.random() * 2.5) + 's';
+    spark.style.animationDelay = (Math.random() * 3) + 's';
+    ambient.appendChild(spark);
+  }
+</script>
+
+</body>
+</html>
